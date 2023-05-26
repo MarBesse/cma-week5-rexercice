@@ -17,20 +17,41 @@ library("dplyr")
 library("lubridate")
 library("ggplot2")
 library("tmap")
+options("sf_max.plot" = 1) #so base plotting only take 1
 
 wildschwein_BE <- read_delim("datasets/wildschwein_BE_2056.csv", ",") |>
   st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
 ```
 
 #Task 1
-
-
+note: ggplot use by default WGS84 for the axis  
 ```{r}
 #equivalent: read_sf (quieter) / st_read
 fanel <- st_read("datasets/Feldaufnahmen_Fanel.gpkg")
-plot(fanel)
+#plot(fanel["Frucht"])
+
+
+ggplot(fanel) +
+  geom_sf(aes(fill = Frucht)) +
+  geom_sf(data = wildschwein_BE, alpha = .3, pch = ".") + #pch = point type
+  theme(legend.position = "none") + # to remove the legend
+  coord_sf(datum = 2056)
 ```
 
+spatial join: we want to link wildboard to the field.  
+annotate wildboar data with info on Land use
+```{r}
+wildschwein_BE <- st_join(wildschwein_BE, fanel) #|> View()
 
+ggplot(fanel) +
+  #geom_sf(aes(fill = Frucht, alpha = .3)) +
+  geom_sf(data = wildschwein_BE, aes(colour = Frucht), alpha = .3, pch = ".") + #pch = point type
+  theme(legend.position = "none") + # to remove the legend
+  coord_sf(datum = 2056)
+
+
+```
+
+#Task4
 
 
