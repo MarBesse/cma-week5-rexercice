@@ -53,5 +53,58 @@ ggplot(fanel) +
 ```
 
 #Task4
+Raster:  
+class       : SpatRaster 
+dimensions  : 5303, 7001, 1  (nrow, ncol, nlyr)
+resolution  : 1, 1  (x, y)
+extent      : 2568153, 2575154, 1202306, 1207609  (xmin, xmax, ymin, ymax)
+coord. ref. : +proj=somerc +lat_0=46.9524055555556 +lon_0=7.43958333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +units=m +no_defs 
+source      : vegetationshoehe_LFI.tif 
+name        : vegetationshoehe_LFI 
+min value   :                 0.00 
+max value   :                47.58 
+
+nlyr = number of layers  
+
+```{r}
+veg <- rast("datasets/vegetationshoehe_LFI.tif") 
+#plot(veg)
+
+tm_shape(veg) +
+  tm_raster(style = "cont", palette = "viridis") + #style continuous
+  tm_shape(wildschwein_BE) + tm_dots()
+
+#extracting the values of the raster (vegetation height) for each point
+#we can use attributes to specify how summarize the extracted data "FUN"
+veg_extract <- extract(veg, wildschwein_BE)
+str(veg_extract)
+
+wildschwein_BE$veg <- veg_extract$vegetationshoehe_LFI
+wildschwein_BE
 
 
+ggplot(fanel) +
+  #geom_sf(aes(fill = Frucht, alpha = .3)) +
+  geom_sf(data = wildschwein_BE, aes(colour = veg), alpha = .3, pch = ".") + #pch = point type
+  theme(legend.position = "none") + # to remove the legend
+  coord_sf(datum = 2056)
+```
+
+'data.frame':	51246 obs. of  2 variables:
+ $ ID                  : num  1 2 3 4 5 6 7 8 9 10 ...
+ $ vegetationshoehe_LFI: num  20.1 23.9 25 21.6 15.7 ...
+ ->  51246 = n° of features in the wildboar data
+ 
+ 
+ 
+ Example with buffered point  
+ Because there is a certain level of uncertainty around GPS points.  
+```{r}
+wildschwein_buffer <- st_buffer(wildschwein_BE, 20)
+wildschwein_buffer
+plot(wildschwein_buffer)
+
+veg_extract2 <- extract(veg, wildschein_buffer, fun = mean)
+
+```
+ 
