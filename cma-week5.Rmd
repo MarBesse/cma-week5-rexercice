@@ -1,0 +1,36 @@
+---
+title: "cma-week5"
+author: "Martine Besse"
+date: "2023-05-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library("readr")
+library("sf")
+library("terra")
+library("dplyr")
+library("lubridate")
+library("ggplot2")
+library("tmap")
+
+wildschwein_BE <- read_delim("datasets/wildschwein_BE_2056.csv", ",") |>
+  st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
+```
+
+#Task 1
+
+
+```{r}
+#equivalent: read_sf (quieter) / st_read
+fanel <- st_read("datasets/Feldaufnahmen_Fanel.gpkg")
+plot(fanel)
+```
+
+
+
+
